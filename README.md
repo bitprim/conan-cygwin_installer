@@ -1,5 +1,5 @@
 [ ![Download](https://api.bintray.com/packages/bincrafters/public-conan/cygwin_installer%3Abincrafters/images/download.svg?version=2.9.1%3Astable) ](https://bintray.com/bincrafters/public-conan/cygwin_installer%3Abincrafters/2.9.0%3Astable/link)
-[![Build status](https://ci.appveyor.com/api/projects/status/a5snyovachh6e8nh?svg=true)](https://ci.appveyor.com/project/BinCrafters/conan-cygwin_installer)
+[![Build status](https://ci.appveyor.com/api/projects/status/se14gom9yvuq9ps4?svg=true)](https://ci.appveyor.com/project/SSE4/conan-cygwin-installer)
 
 Cygwin is a distribution of popular GNU and other Open Source tools running on Microsoft Windows
 
