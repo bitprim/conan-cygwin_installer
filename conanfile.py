@@ -34,7 +34,7 @@ class CygwinInstallerConan(ConanFile):
         command += ' --root %s' % os.path.abspath(self.install_dir)
         # TODO : download and parse mirror list, probably also select the best one
         command += ' -s http://cygwin.mirror.constant.com'
-        packages = ['pkg-config', 'make']
+        packages = ['pkg-config', 'make', 'libtool', 'binutils', 'gcc-core', 'gcc-g++']
         command += ' --packages %s' % ','.join(packages)
         self.run(command)
 
