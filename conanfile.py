@@ -41,6 +41,15 @@ class CygwinInstallerConan(ConanFile):
 
         os.unlink(filename)
 
+        # create /tmp dir in order to avoid
+        # bash.exe: warning: could not find /tmp, please create!
+        tmp_dir = os.path.join(self.install_dir, 'tmp')
+        if not os.path.isdir(tmp_dir):
+            os.makedirs(tmp_dir)
+        tmp_name = os.path.join(tmp_dir, 'dummy')
+        with open(tmp_name, 'a') as f:
+            os.utime(tmp_name, None)
+
     def package(self):
         self.copy(pattern="*", dst=".", src=self.install_dir)
 
