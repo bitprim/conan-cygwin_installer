@@ -13,6 +13,7 @@ class CygwinInstallerConan(ConanFile):
     description = "Cygwin is a distribution of popular GNU and other Open Source tools running on Microsoft Windows"
     license = "https://cygwin.com/COPYING"
     install_dir = 'cygwin-install'
+    short_paths = True
 
     def build(self):
         filename = "setup-%s.exe" % self.settings.arch
