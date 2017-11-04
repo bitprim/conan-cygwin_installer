@@ -3,6 +3,9 @@
 
 from conans import ConanFile, tools
 import os
+import ctypes
+
+FILE_ATTRIBUTE_SYSTEM = 4
 
 
 class CygwinInstallerConan(ConanFile):
@@ -47,12 +50,34 @@ class CygwinInstallerConan(ConanFile):
         if not os.path.isdir(tmp_dir):
             os.makedirs(tmp_dir)
         tmp_name = os.path.join(tmp_dir, 'dummy')
-        with open(tmp_name, 'a') as f:
+        with open(tmp_name, 'a'):
             os.utime(tmp_name, None)
 
     def package(self):
         self.copy(pattern="*", dst=".", src=self.install_dir)
 
+    def fix_symlinks(self):
+        for root, _, files in os.walk(self.package_folder):
+            for file in files:
+                filename = os.path.join(root, file)
+                with open(filename, 'rb') as f:
+                    try:
+                        signature = f.read(10).decode()
+                        if signature == '!<symlink>':
+                            self.output.warn('setting system attribute on "%s"' % filename)
+                            attributes = ctypes.windll.kernel32.GetFileAttributesW(filename)
+                            ctypes.windll.kernel32.SetFileAttributesW(filename, attributes | FILE_ATTRIBUTE_SYSTEM)
+                    except UnicodeDecodeError:
+                        pass
+
     def package_info(self):
+        # workaround for error "cannot execute binary file: Exec format error"
+        # symbolic links must have system attribute in order to work properly
+        marker = os.path.join(self.package_folder, '.symlinks_fixed')
+        if not os.path.isfile(marker):
+            self.fix_symlinks()
+            with open(marker, 'a'):
+                os.utime(marker, None)
+
         self.env_info.CYGWIN_ROOT = self.package_folder
         self.env_info.path.append(os.path.join(self.package_folder, 'bin'))
