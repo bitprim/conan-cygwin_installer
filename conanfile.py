@@ -78,4 +78,3 @@ class CygwinInstallerConan(ConanFile):
 
         self.env_info.CYGWIN_ROOT = self.package_folder
         self.env_info.CYGWIN_BIN = os.path.join(self.package_folder, 'bin')
-        self.env_info.path.append(os.path.join(self.package_folder, 'bin'))
