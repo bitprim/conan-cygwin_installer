@@ -65,9 +65,9 @@ class CygwinInstallerConan(ConanFile):
                         signature = f.read(10).decode()
                         if signature == '!<symlink>':
                             attributes = ctypes.windll.kernel32.GetFileAttributesW(filename)
-                            if FILE_ATTRIBUTE_SYSTEM != (attributes & FILE_ATTRIBUTE_SYSTEM):
-                                self.output.warn('setting system attribute on "%s"' % filename)
-                                ctypes.windll.kernel32.SetFileAttributesW(filename, attributes | FILE_ATTRIBUTE_SYSTEM)
+                            #if FILE_ATTRIBUTE_SYSTEM != (attributes & FILE_ATTRIBUTE_SYSTEM):
+                            self.output.warn('setting system attribute on "%s"' % filename)
+                            ctypes.windll.kernel32.SetFileAttributesW(filename, attributes | FILE_ATTRIBUTE_SYSTEM)
                     except UnicodeDecodeError:
                         pass
 
