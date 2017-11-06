@@ -3,9 +3,6 @@
 
 from conans import ConanFile, tools
 import os
-import ctypes
-
-FILE_ATTRIBUTE_SYSTEM = 4
 
 
 class CygwinInstallerConan(ConanFile):
@@ -57,19 +54,8 @@ class CygwinInstallerConan(ConanFile):
         self.copy(pattern="*", dst=".", src=self.install_dir)
 
     def fix_symlinks(self):
-        for root, _, files in os.walk(self.package_folder):
-            for file in files:
-                filename = os.path.join(root, file)
-                with open(filename, 'rb') as f:
-                    try:
-                        signature = f.read(10).decode()
-                        if signature == '!<symlink>':
-                            attributes = ctypes.windll.kernel32.GetFileAttributesW(filename)
-                            #if FILE_ATTRIBUTE_SYSTEM != (attributes & FILE_ATTRIBUTE_SYSTEM):
-                            self.output.warn('setting system attribute on "%s"' % filename)
-                            ctypes.windll.kernel32.SetFileAttributesW(filename, attributes | FILE_ATTRIBUTE_SYSTEM)
-                    except UnicodeDecodeError:
-                        pass
+        path = os.path.join(self.package_folder, 'bin', '*')
+        self.run('attrib -r +s /D "%s" /S /L' % path)
 
     def package_info(self):
         # workaround for error "cannot execute binary file: Exec format error"
