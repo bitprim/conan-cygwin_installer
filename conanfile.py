@@ -8,10 +8,10 @@ import os
 class CygwinInstallerConan(ConanFile):
     name = "cygwin_installer"
     version = "2.9.0"
-    settings = {"os": ["Windows"], "arch": ["x86", "x86_64"]}
-    url = "https://github.com/bincrafters/conan-cygwin_installer"
-    description = "Cygwin is a distribution of popular GNU and other Open Source tools running on Microsoft Windows"
     license = "https://cygwin.com/COPYING"
+    description = "Cygwin is a distribution of popular GNU and other Open Source tools running on Microsoft Windows"
+    url = "https://github.com/bincrafters/conan-cygwin_installer"
+    settings = {"os": ["Windows"], "arch": ["x86", "x86_64"]}
     install_dir = 'cygwin-install'
     short_paths = True
 
