@@ -62,5 +62,15 @@ class CygwinInstallerConan(ConanFile):
         # symbolic links must have system attribute in order to work properly
         self.fix_symlinks()
 
-        self.env_info.CYGWIN_ROOT = self.package_folder
-        self.env_info.CYGWIN_BIN = os.path.join(self.package_folder, 'bin')
+        cygwin_root = self.package_folder
+        cygwin_bin = os.path.join(cygwin_root, "bin")
+        
+        self.output.info("Creating CYGWIN_ROOT env var : %s" % cygwin_root)
+        self.env_info.CYGWIN_ROOT = cygwin_root
+        
+        self.output.info("Creating CYGWIN_BIN env var : %s" % cygwin_bin)
+        self.env_info.CYGWIN_BIN = cygwin_bin
+
+        self.output.info("Appending PATH env var with : " + cygwin_bin)
+        self.env_info.path.append(cygwin_bin)
+              
