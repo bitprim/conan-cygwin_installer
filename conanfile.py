@@ -11,12 +11,18 @@ class CygwinInstallerConan(ConanFile):
     license = "https://cygwin.com/COPYING"
     description = "Cygwin is a distribution of popular GNU and other Open Source tools running on Microsoft Windows"
     url = "https://github.com/bincrafters/conan-cygwin_installer"
-    settings = {"os": ["Windows"], "arch": ["x86", "x86_64"]}
+    settings = "build_os", "build_arch"
     install_dir = 'cygwin-install'
     short_paths = True
+    options = {"additional_packages": "ANY"}
+    default_options = "additional_packages=None" # Colon separated, https://cygwin.com/packages/package_list.html
+
+    def configure(self):
+        if self.settings.build_os != "Windows":
+            raise Exception("Only windows supported")
 
     def build(self):
-        filename = "setup-%s.exe" % self.settings.arch
+        filename = "setup-%s.exe" % self.settings.build_arch
         url = "https://cygwin.com/%s" % filename
         tools.download(url, filename)
 
@@ -25,7 +31,7 @@ class CygwinInstallerConan(ConanFile):
 
         # https://cygwin.com/faq/faq.html#faq.setup.cli
         command = filename
-        command += ' --arch %s' % self.settings.arch
+        command += ' --arch %s' % self.settings.build_arch
         # Disable creation of desktop and start menu shortcuts
         command += ' --no-shortcuts'
         # Do not check for and enforce running as Administrator
@@ -35,7 +41,10 @@ class CygwinInstallerConan(ConanFile):
         command += ' --root %s' % os.path.abspath(self.install_dir)
         # TODO : download and parse mirror list, probably also select the best one
         command += ' -s http://cygwin.mirror.constant.com'
-        packages = ['pkg-config', 'make', 'libtool', 'binutils', 'gcc-core', 'gcc-g++']
+        packages = ['pkg-config', 'make', 'libtool', 'binutils', 'gcc-core', 'gcc-g++',
+                    'autoconf', 'automake', 'gettext']
+        if self.options.additional_packages:
+            packages.extend(",".split(str(self.options.additional_packages)))
         command += ' --packages %s' % ','.join(packages)
         self.run(command)
 
