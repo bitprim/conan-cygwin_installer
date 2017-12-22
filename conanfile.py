@@ -3,6 +3,8 @@
 
 from conans import ConanFile, tools
 import os
+from conans import __version__ as conan_version
+from conans.model.version import Version
 
 
 class CygwinInstallerConan(ConanFile):
@@ -11,12 +13,25 @@ class CygwinInstallerConan(ConanFile):
     license = "https://cygwin.com/COPYING"
     description = "Cygwin is a distribution of popular GNU and other Open Source tools running on Microsoft Windows"
     url = "https://github.com/bincrafters/conan-cygwin_installer"
-    settings = {"os": ["Windows"], "arch": ["x86", "x86_64"]}
+    if conan_version < Version("0.99"):
+        settings = {"os": ["Windows"], "arch": ["x86", "x86_64"]}
+    else:
+        settings = {"os_build": ["Windows"], "arch_build": ["x86", "x86_64"]}
     install_dir = 'cygwin-install'
     short_paths = True
+    options = {"additional_packages": "ANY"}
+    default_options = "additional_packages=None" # Colon separated, https://cygwin.com/packages/package_list.html
+
+    @property
+    def os(self):
+        return self.settings.get_safe("os_build") or self.settings.get_safe("os")
+
+    @property
+    def arch(self):
+        return self.settings.get_safe("arch_build") or self.settings.get_safe("arch")
 
     def build(self):
-        filename = "setup-%s.exe" % self.settings.arch
+        filename = "setup-%s.exe" % self.arch
         url = "https://cygwin.com/%s" % filename
         tools.download(url, filename)
 
@@ -25,7 +40,7 @@ class CygwinInstallerConan(ConanFile):
 
         # https://cygwin.com/faq/faq.html#faq.setup.cli
         command = filename
-        command += ' --arch %s' % self.settings.arch
+        command += ' --arch %s' % self.arch
         # Disable creation of desktop and start menu shortcuts
         command += ' --no-shortcuts'
         # Do not check for and enforce running as Administrator
@@ -35,7 +50,10 @@ class CygwinInstallerConan(ConanFile):
         command += ' --root %s' % os.path.abspath(self.install_dir)
         # TODO : download and parse mirror list, probably also select the best one
         command += ' -s http://cygwin.mirror.constant.com'
-        packages = ['pkg-config', 'make', 'libtool', 'binutils', 'gcc-core', 'gcc-g++']
+        packages = ['pkg-config', 'make', 'libtool', 'binutils', 'gcc-core', 'gcc-g++',
+                    'autoconf', 'automake', 'gettext']
+        if self.options.additional_packages:
+            packages.extend(",".split(str(self.options.additional_packages)))
         command += ' --packages %s' % ','.join(packages)
         self.run(command)
 
@@ -73,4 +91,3 @@ class CygwinInstallerConan(ConanFile):
 
         self.output.info("Appending PATH env var with : " + cygwin_bin)
         self.env_info.path.append(cygwin_bin)
-              
