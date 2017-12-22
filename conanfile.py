@@ -14,9 +14,9 @@ class CygwinInstallerConan(ConanFile):
     description = "Cygwin is a distribution of popular GNU and other Open Source tools running on Microsoft Windows"
     url = "https://github.com/bincrafters/conan-cygwin_installer"
     if conan_version < Version("0.99"):
-        settings = "os", "arch"
+        settings = {"os": ["Windows"], "arch": ["x86", "x86_64"]}
     else:
-        settings = "os_build", "arch_build"
+        settings = {"os_build": ["Windows"], "arch_build": ["x86", "x86_64"]}
     install_dir = 'cygwin-install'
     short_paths = True
     options = {"additional_packages": "ANY"}
@@ -29,10 +29,6 @@ class CygwinInstallerConan(ConanFile):
     @property
     def arch(self):
         return self.settings.get_safe("arch_build") or self.settings.get_safe("arch")
-
-    def configure(self):
-        if self.os != "Windows":
-            raise Exception("Only windows supported")
 
     def build(self):
         filename = "setup-%s.exe" % self.arch
