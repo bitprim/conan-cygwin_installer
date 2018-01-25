@@ -12,7 +12,7 @@ class CygwinInstallerConan(ConanFile):
     version = "2.9.0"
     license = "https://cygwin.com/COPYING"
     description = "Cygwin is a distribution of popular GNU and other Open Source tools running on Microsoft Windows"
-    url = "https://github.com/bincrafters/conan-cygwin_installer"
+    url = "https://github.com/bitprim/conan-cygwin_installer"
     if conan_version < Version("0.99"):
         settings = {"os": ["Windows"], "arch": ["x86", "x86_64"]}
     else:
